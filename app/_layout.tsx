@@ -5,6 +5,9 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import { useAuthStore } from './utils/store';
 import { checkAuthStatus } from './services/auth';
 import * as Sentry from 'sentry-expo';
+import { StatusBar } from 'expo-status-bar';
+import { useFonts } from 'expo-font';
+import { Text } from 'react-native';
 
 // استيراد reanimated بشكل مشروط بالمنصة
 // فقط على المنصات المحمولة وليس الويب
@@ -18,11 +21,14 @@ if (Platform.OS !== 'web') {
 
 // تكوين Sentry لتتبع الأخطاء
 Sentry.init({
-  dsn: "https://example@sentry.io/123456", // استبدل هذا بمعلومات DSN الخاصة بك من لوحة تحكم Sentry
-  enableInExpoDevelopment: true,
-  debug: __DEV__, // تمكين وضع التصحيح في بيئة التطوير
-  enableNative: Platform.OS !== 'web', // تعطيل على الويب وتفعيل على المنصات المحمولة
+  dsn: "https://c89f5f6c4e3c4e08ad05ba4bd1ecdd6f@o4506767913181184.ingest.sentry.io/4506767915147264",
 });
+
+// إضافة تكوين للمسارات لإصلاح مشكلة GitHub Pages
+export const unstable_settings = {
+  initialRouteName: "index",
+  basePath: process.env.NODE_ENV === "production" ? "/YazCarFaxWeb" : "",
+};
 
 // تعريف interface لمكون ErrorBoundary
 interface ErrorBoundaryProps {
@@ -71,6 +77,9 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 function RootLayout() {
   const colorScheme = useColorScheme();
   const { setUser, setIsAuthenticated } = useAuthStore();
+  const [loaded] = useFonts({
+    // يمكن تحميل الخطوط هنا إذا لزم الأمر
+  });
 
   useEffect(() => {
     async function loadAuthStatus() {
@@ -93,10 +102,14 @@ function RootLayout() {
     loadAuthStatus();
   }, []);
 
+  if (!loaded) {
+    return <Text>جاري تحميل التطبيق...</Text>;
+  }
+
   return (
     <ErrorBoundary>
-      {/* @ts-ignore */}
       <PaperProvider>
+        <StatusBar style="auto" />
         <Stack screenOptions={{ headerShown: false }} />
       </PaperProvider>
     </ErrorBoundary>

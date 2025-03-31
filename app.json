@@ -1,33 +1,20 @@
 {
   "expo": {
-    "scheme": "acme",
-    "plugins": [
-      "expo-router",
-      [
-        "expo-camera",
-        {
-          "cameraPermission": "نحتاج إلى استخدام الكاميرا لمسح رموز QR للسيارات"
-        }
-      ],
-      [
-        "expo-image-picker",
-        {
-          "photosPermission": "نحتاج الوصول إلى الصور لاختيار صور تحتوي على رموز QR"
-        }
-      ]
-    ],
-    "name": "yazcar",
+    "name": "YazCar",
     "slug": "yazcar",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "platforms": ["ios", "android", "web"],
+    "scheme": "yazcar",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.yazcar.app",
@@ -48,8 +35,30 @@
       "favicon": "./assets/favicon.png",
       "bundler": "metro",
       "output": "static",
-      "baseUrl": "/YazCarFaxWeb/"
+      "baseUrl": "/YazCarFaxWeb",
+      "distDir": "dist",
+      "pubSub": "/YazCarFaxWeb",
+      "router": {
+        "origin": "https://yousefjaser.github.io"
+      }
     },
+    "extra": {
+      "router": {
+        "origin": "https://yousefjaser.github.io"
+      },
+      "eas": {
+        "projectId": "f04efa03-5fda-4c65-8cb7-ff00bbfa41bb"
+      }
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "sentry-expo",
+        {
+          "autoInstall": false
+        }
+      ]
+    ],
     "newArchEnabled": true
   }
 }

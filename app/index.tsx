@@ -1,24 +1,33 @@
 // @ts-nocheck
-import React from 'react';
-import { Redirect } from 'expo-router';
+import React, { useEffect } from 'react';
+import { Redirect, useRootNavigationState } from 'expo-router';
+import { Text, View } from 'react-native';
 import { useAuthStore } from './utils/store';
 
 export default function Index() {
   const { isAuthenticated, user } = useAuthStore();
+  const rootNavigationState = useRootNavigationState();
+  
+  if (!rootNavigationState?.key) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>جاري تحميل التطبيق...</Text>
+      </View>
+    );
+  }
   
   if (!isAuthenticated) {
     return <Redirect href="/auth/login" />;
   }
   
-  // توجيه المستخدم بناءً على نوعه
-  const userRole = String(user?.role).toLowerCase();
-  
-  if (userRole === 'admin') {
-    return <Redirect href="/admin/admin-dashboard" />;
-  } else if (userRole === 'shop_owner' || userRole === 'shop') {
-    return <Redirect href="/shop/shop-dashboard" />;
-  } else {
-    // إذا لم يكن له دور محدد يدخل كعميل
-    return <Redirect href="/customer/customer-dashboard" />;
+  switch (user?.role) {
+    case 'admin':
+      return <Redirect href="/admin/admin-dashboard" />;
+    case 'shop':
+      return <Redirect href="/shop/shop-dashboard" />;
+    case 'customer':
+      return <Redirect href="/customer/customer-dashboard" />;
+    default:
+      return <Redirect href="/auth/login" />;
   }
 } 
