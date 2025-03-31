@@ -11,6 +11,11 @@ import { useRouter } from 'expo-router';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 
 export default function ShopDashboardScreen() {
+  console.log("تم تحميل مكون ShopDashboardScreen");
+  
+  // إضافة متغير للتحقق من أن المكون قد تم تحميله بالفعل (يمنع التحميل المتكرر)
+  const [hasLoaded, setHasLoaded] = useState(false);
+  
   const router = useRouter();
   const { user } = useAuthStore();
   const [profile, setProfile] = useState(null);
@@ -107,7 +112,19 @@ export default function ShopDashboardScreen() {
   };
   
   const handleScanQR = () => {
-    router.push('/shop/scan');
+    console.log("تم الضغط على زر مسح QR - استخدام طريقة التنقل للجوال: /shop/scan");
+    try {
+      if (Platform.OS === 'web') {
+        router.push('/shop/scan');
+      } else {
+        // على الأجهزة المحمولة، استخدم navigate بدلاً من push
+        navigation.navigate('scan');
+      }
+    } catch (error) {
+      console.error("خطأ في التنقل:", error);
+      // محاولة بديلة
+      router.push('/shop/scan');
+    }
   };
 
   if (loading) {
@@ -194,7 +211,10 @@ export default function ShopDashboardScreen() {
           
           <TouchableOpacity 
             style={styles.actionCard}
-            onPress={() => router.push('/shop/add-car')}
+            onPress={() => {
+              console.log("تم الضغط على زر سيارة جديدة - التوجيه إلى: /shop/add-car");
+              router.push('/shop/add-car');
+            }}
           >
             <View style={styles.actionCardContent}>
               <View style={styles.actionIconContainer}>
@@ -209,7 +229,7 @@ export default function ShopDashboardScreen() {
           
           <TouchableOpacity 
             style={[styles.actionCard, { backgroundColor: '#3498db' }]}
-            onPress={() => router.push('/shop/scan')}
+            onPress={handleScanQR}
           >
             <View style={styles.actionCardContent}>
               <View style={styles.actionIconContainer}>
@@ -244,26 +264,61 @@ export default function ShopDashboardScreen() {
 
       {/* شريط التنقل السفلي العائم */}
       <View style={styles.floatingNavBar}>
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/shop/cars')}>
+        <TouchableOpacity style={styles.navItem} onPress={() => {
+          console.log("التنقل إلى السيارات");
+          if (Platform.OS === 'web') {
+            router.push('/shop/cars');
+          } else {
+            navigation.navigate('cars');
+          }
+        }}>
           <Icon name="car" size={22} color="#6c757d" />
           <Text style={styles.navItemText}>السيارات</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/shop/service-history')}>
+        <TouchableOpacity style={styles.navItem} onPress={() => {
+          console.log("التنقل إلى الزيوت");
+          if (Platform.OS === 'web') {
+            router.push('/shop/service-history');
+          } else {
+            navigation.navigate('service-history');
+          }
+        }}>
           <Icon name="wrench" size={22} color="#6c757d" />
           <Text style={styles.navItemText}>الزيوت</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.homeNavItem} onPress={() => router.push('/shop/shop-dashboard')}>
+        <TouchableOpacity style={styles.homeNavItem} onPress={() => {
+          console.log("التنقل إلى لوحة التحكم");
+          if (Platform.OS === 'web') {
+            router.push('/shop/shop-dashboard');
+          } else {
+            navigation.navigate('shop-dashboard');
+          }
+        }}>
           <Icon name="home" size={26} color="#FFF" />
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/shop/service-history')}>
+        <TouchableOpacity style={styles.navItem} onPress={() => {
+          console.log("التنقل إلى التذكيرات");
+          if (Platform.OS === 'web') {
+            router.push('/shop/service-history');
+          } else {
+            navigation.navigate('service-history');
+          }
+        }}>
           <Icon name="bell" size={22} color="#6c757d" />
           <Text style={styles.navItemText}>التذكيرات</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.navItem} onPress={() => router.push('/shop/profile')}>
+        <TouchableOpacity style={styles.navItem} onPress={() => {
+          console.log("التنقل إلى المزيد");
+          if (Platform.OS === 'web') {
+            router.push('/shop/profile');
+          } else {
+            navigation.navigate('profile');
+          }
+        }}>
           <Icon name="menu" size={22} color="#6c757d" />
           <Text style={styles.navItemText}>المزيد</Text>
         </TouchableOpacity>

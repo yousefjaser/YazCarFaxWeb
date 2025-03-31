@@ -189,6 +189,7 @@ export default function LoginScreen() {
           router.replace('/admin/admin-dashboard');
         } else if (data.user.role === 'shop' || data.user.role === 'shop_owner') {
           router.replace('/shop/shop-dashboard');
+          console.log("توجيه المستخدم إلى لوحة تحكم المحل: /shop/shop-dashboard");
         } else if (data.user.role === 'customer') {
           router.replace('/customer/customer-dashboard');
         } else {

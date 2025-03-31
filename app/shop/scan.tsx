@@ -9,6 +9,7 @@ import { COLORS } from '../constants';
 import { supabase } from '../config';
 import Loading from '../components/Loading';
 import * as Sentry from 'sentry-expo';
+import { useNavigation } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -114,6 +115,7 @@ const WebCamera = ({ onBarCodeScanned, style, onError }) => {
 };
 
 export default function ScanScreen() {
+  console.log("تم تحميل صفحة المسح الكاملة");
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const [scanMode, setScanMode] = useState(true); // بدء الصفحة بوضع الكاميرا مباشرة
@@ -125,6 +127,7 @@ export default function ScanScreen() {
   const [bottomSheetHeight, setBottomSheetHeight] = useState(220); // ارتفاع البوتوم شيت الافتراضي
   const [webCameraActive, setWebCameraActive] = useState(false); // حالة الكاميرا على الويب
   const router = useRouter();
+  const navigation = useNavigation();
   const [cameraError, setCameraError] = useState(null);
   
   // إعداد مستمع للكيبورد
@@ -183,6 +186,16 @@ export default function ScanScreen() {
     } catch (error) {
       console.error('فشل في تشغيل كاميرا الويب:', error);
       Alert.alert('خطأ', 'لم نتمكن من تشغيل الكاميرا. يرجى استخدام البحث اليدوي.');
+    }
+  };
+  
+  // العودة إلى لوحة التحكم
+  const goBack = () => {
+    console.log("العودة إلى لوحة التحكم");
+    if (Platform.OS === 'web') {
+      router.push('/shop/shop-dashboard');
+    } else {
+      navigation.navigate('shop-dashboard');
     }
   };
   
@@ -360,11 +373,9 @@ export default function ScanScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Link href="/shop/shop-dashboard" asChild>
-          <TouchableOpacity>
-            <Icon name="arrow-left" size={28} color="#FFF" />
-          </TouchableOpacity>
-        </Link>
+        <TouchableOpacity onPress={goBack}>
+          <Icon name="arrow-left" size={28} color="#FFF" />
+        </TouchableOpacity>
         
         <Text style={styles.headerTitle}>مسح رمز QR</Text>
         
