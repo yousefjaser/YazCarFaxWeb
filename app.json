@@ -45,7 +45,10 @@
       "permissions": ["CAMERA", "READ_EXTERNAL_STORAGE"]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "output": "static",
+      "baseUrl": "/YazCarFaxWeb/"
     },
     "newArchEnabled": true
   }

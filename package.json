@@ -8,7 +8,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "predeploy": "expo export:web",
+    "predeploy": "expo export --platform web",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
