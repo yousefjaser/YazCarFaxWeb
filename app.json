@@ -34,8 +34,9 @@
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "webpack",
-      "output": "single",
+      "output": "static",
       "baseUrl": "/YazCarFaxWeb",
+      "publicPath": "/YazCarFaxWeb/",
       "router": {
         "mode": "hash"
       }
@@ -53,8 +54,7 @@
       [
         "expo-router",
         {
-          "origin": "https://yousefjaser.github.io",
-          "mode": "hash"
+          "origin": "https://yousefjaser.github.io"
         }
       ],
       [

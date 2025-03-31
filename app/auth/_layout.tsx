@@ -7,10 +7,7 @@ export const unstable_settings = {
   initialRouteName: "login",
 };
 
-// تكوين Router لاستخدام Hash Router
-export const router = {
-  type: "hash",
-};
+// تم إزالة تكوين router.type لتجنب التعارض مع الإعدادات في app.json
 
 export default function AuthLayout() {
   return (

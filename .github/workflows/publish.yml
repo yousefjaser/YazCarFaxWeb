@@ -22,8 +22,10 @@ jobs:
         run: npm ci
 
       - name: Build web app 🏗️
-        run: npx expo export:web
-      
+        run: |
+          npm install -g expo-cli
+          npx expo export:web --public-path=/YazCarFaxWeb/
+
       - name: Create .nojekyll file ✍️
         run: touch web-build/.nojekyll
       

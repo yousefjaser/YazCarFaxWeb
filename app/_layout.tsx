@@ -30,11 +30,6 @@ export const unstable_settings = {
   basePath: process.env.NODE_ENV === "production" ? "/YazCarFaxWeb" : "",
 };
 
-// إضافة تكوين router type
-export const router = {
-  type: "hash", // استخدام hash router بدلاً من browser router
-};
-
 // تعريف interface لمكون ErrorBoundary
 interface ErrorBoundaryProps {
   children?: ReactNode;
