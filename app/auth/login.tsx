@@ -184,10 +184,10 @@ export default function LoginScreen() {
         setUser(data.user);
         setIsAuthenticated(true);
         
-        // توجيه المستخدم حسب الدور
+        // توجيه المستخدم حسب الدور بالمسارات الصحيحة
         if (data.user.role === 'admin') {
           router.replace('/admin/admin-dashboard');
-        } else if (data.user.role === 'shop_owner') {
+        } else if (data.user.role === 'shop' || data.user.role === 'shop_owner') {
           router.replace('/shop/shop-dashboard');
         } else if (data.user.role === 'customer') {
           router.replace('/customer/customer-dashboard');
