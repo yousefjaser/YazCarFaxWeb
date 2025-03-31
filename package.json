@@ -2,11 +2,14 @@
   "name": "yazcar",
   "version": "1.0.0",
   "main": "expo-router/entry",
+  "homepage": "https://yousefjaser.github.io/YazCarFaxWeb",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "predeploy": "expo export:web",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.6.5",
@@ -47,6 +50,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@types/react": "~18.3.12",
+    "gh-pages": "^6.3.0",
     "typescript": "^5.3.3"
   },
   "private": true
