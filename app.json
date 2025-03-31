@@ -39,12 +39,13 @@
       "distDir": "dist",
       "pubSub": "/YazCarFaxWeb",
       "router": {
-        "origin": "https://yousefjaser.github.io"
+        "mode": "hash"
       }
     },
     "extra": {
       "router": {
-        "origin": "https://yousefjaser.github.io"
+        "origin": "https://yousefjaser.github.io",
+        "mode": "hash"
       },
       "eas": {
         "projectId": "f04efa03-5fda-4c65-8cb7-ff00bbfa41bb"

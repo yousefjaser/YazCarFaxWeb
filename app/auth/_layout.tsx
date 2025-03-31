@@ -7,13 +7,13 @@ export const unstable_settings = {
   initialRouteName: "login",
 };
 
+// تكوين Router لاستخدام Hash Router
+export const router = {
+  type: "hash",
+};
+
 export default function AuthLayout() {
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        animation: 'slide_from_right',
-      }}
-    />
+    <Stack screenOptions={{ headerShown: false }} />
   );
 } 

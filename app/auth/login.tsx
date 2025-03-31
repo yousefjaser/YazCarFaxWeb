@@ -9,21 +9,21 @@ import ErrorMessage from '../components/ErrorMessage';
 import { signIn } from '../services/auth';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAuthStore } from '../utils/store';
-import { useRouter } from 'expo-router';
+import { router, useSegments } from 'expo-router';
 import LottieView from 'lottie-react-native';
 
 const { width, height } = Dimensions.get('window');
 const isWeb = Platform.OS === 'web';
 
 export default function LoginScreen() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
-  const { setUser, setIsAuthenticated } = useAuthStore();
+  const { setUser, setIsAuthenticated, user } = useAuthStore();
+  const segments = useSegments();
   
   // مرجع للانيميشن
   const lottieRef = useRef<LottieView>(null);
@@ -225,6 +225,32 @@ export default function LoginScreen() {
   
   // حساب حالة الحواف لقسم تسجيل الدخول
   const borderRadius = keyboardVisible ? 0 : 30;
+
+  // تأكد من أن useLogin يعمل بشكل صحيح مع HashRouter
+  useEffect(() => {
+    // نتحقق أن هذه أول مرة يتم فيها تحميل صفحة تسجيل الدخول
+    // وأن المستخدم مسجل دخوله بالفعل
+    if (user && user.role) {
+      console.log("المستخدم مسجل دخوله بالفعل، إعادة توجيه إلى لوحة التحكم");
+      
+      // ننتظر قليلاً لتجنب حلقة الإعادة
+      setTimeout(() => {
+        switch (user.role) {
+          case 'admin':
+            router.replace('/admin/admin-dashboard');
+            break;
+          case 'shop':
+            router.replace('/shop/shop-dashboard');
+            break;
+          case 'customer':
+            router.replace('/customer/customer-dashboard');
+            break;
+          default:
+            break;
+        }
+      }, 100);
+    }
+  }, [user, segments]);
 
   return (
     <SafeAreaView style={[
