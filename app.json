@@ -17,7 +17,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yazcar.app",
+      "bundleIdentifier": "com.YazCar.app",
       "infoPlist": {
         "NSCameraUsageDescription": "نحتاج إلى استخدام الكاميرا لمسح رموز QR للسيارات",
         "NSPhotoLibraryUsageDescription": "نحتاج الوصول إلى الصور لاختيار صور تحتوي على رموز QR"
@@ -28,7 +28,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.yazcar.app",
+      "package": "com.YazCar.app",
       "permissions": ["CAMERA", "READ_EXTERNAL_STORAGE"]
     },
     "web": {
@@ -37,7 +37,6 @@
       "output": "static",
       "baseUrl": "/YazCarFaxWeb",
       "distDir": "dist",
-      "pubSub": "/YazCarFaxWeb",
       "router": {
         "mode": "hash"
       }
@@ -52,7 +51,13 @@
       }
     },
     "plugins": [
-      "expo-router",
+      [
+        "expo-router",
+        {
+          "origin": "https://yousefjaser.github.io",
+          "mode": "hash"
+        }
+      ],
       [
         "sentry-expo",
         {

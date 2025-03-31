@@ -1,5 +1,18 @@
 // @ts-nocheck
-import { useRouter as useExpoRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter as useExpoRouter, useLocalSearchParams, router as expoRouter } from 'expo-router';
+
+/**
+ * تحويل المسارات لتتوافق مع HashRouter
+ * مثال: /auth/login -> /auth/login
+ * نحن نتأكد أن المسارات تتوافق مع نمط HashRouter
+ */
+function formatPath(path) {
+  // إذا كان المسار يبدأ بـ '/', نحذفه
+  if (path && path.startsWith('/')) {
+    return path;
+  }
+  return path;
+}
 
 /**
  * Hook آمن للتوجيه يعمل مع وضع NOBRIDGE
@@ -63,7 +76,10 @@ export function useRouter() {
       push: (path, params) => {
         if (typeof router.push === 'function') {
           try {
-            return router.push(path, params);
+            // تنسيق المسار قبل استخدامه
+            const formattedPath = formatPath(path);
+            console.log(`توجيه إلى: ${formattedPath}`);
+            return router.push(formattedPath, params);
           } catch (error) {
             console.warn(`خطأ عند استدعاء router.push(${path})`, error);
           }
@@ -75,7 +91,10 @@ export function useRouter() {
       replace: (path, params) => {
         if (typeof router.replace === 'function') {
           try {
-            return router.replace(path, params);
+            // تنسيق المسار قبل استخدامه
+            const formattedPath = formatPath(path);
+            console.log(`استبدال بـ: ${formattedPath}`);
+            return router.replace(formattedPath, params);
           } catch (error) {
             console.warn(`خطأ عند استدعاء router.replace(${path})`, error);
           }
@@ -126,6 +145,26 @@ export function useParams() {
     console.warn('خطأ في استخدام useLocalSearchParams', error);
     return {};
   }
+}
+
+// تعديل مباشر للموجه الأساسي حتى يعمل من أي مكان
+if (expoRouter) {
+  const originalPush = expoRouter.push;
+  const originalReplace = expoRouter.replace;
+  
+  // تغيير سلوك router.push
+  expoRouter.push = function(path, params) {
+    const formattedPath = formatPath(path);
+    console.log(`توجيه عام إلى: ${formattedPath}`);
+    return originalPush.call(this, formattedPath, params);
+  };
+  
+  // تغيير سلوك router.replace
+  expoRouter.replace = function(path, params) {
+    const formattedPath = formatPath(path);
+    console.log(`استبدال عام بـ: ${formattedPath}`);
+    return originalReplace.call(this, formattedPath, params);
+  };
 }
 
 // تصدير افتراضي للتوافق مع NOBRIDGE
