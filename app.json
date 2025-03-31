@@ -2,9 +2,51 @@
   "expo": {
     "scheme": "acme",
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "نحتاج إلى استخدام الكاميرا لمسح رموز QR للسيارات"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "نحتاج الوصول إلى الصور لاختيار صور تحتوي على رموز QR"
+        }
+      ]
     ],
     "name": "yazcar",
-    "slug": "yazcar"
+    "slug": "yazcar",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "platforms": ["ios", "android", "web"],
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yazcar.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "نحتاج إلى استخدام الكاميرا لمسح رموز QR للسيارات",
+        "NSPhotoLibraryUsageDescription": "نحتاج الوصول إلى الصور لاختيار صور تحتوي على رموز QR"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.yazcar.app",
+      "permissions": ["CAMERA", "READ_EXTERNAL_STORAGE"]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "newArchEnabled": true
   }
 }
