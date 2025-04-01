@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <meta name="theme-color" content="#000000" />
+  <meta name="theme-color" content="#007bff" />
+  <meta name="description" content="تطبيق لإدارة معلومات السيارات وتاريخ الصيانة" />
   <title>YazCar - إدارة معلومات السيارات</title>
   <link rel="manifest" href="/manifest.json" />
   <link rel="shortcut icon" href="/favicon.ico" />
@@ -53,7 +54,8 @@
     window.nanoid = window.nanoidFallback;
 
     // تعريف كائن nanoid لدعم الاستيراد
-    window.r = { nanoid: window.nanoidFallback };
+    window.r = window.r || {};
+    window.r.nanoid = window.nanoidFallback;
     
     // تعريف module.exports لدعم استيراد شامل
     window.module = window.module || {};

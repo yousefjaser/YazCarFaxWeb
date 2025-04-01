@@ -1,40 +1,17 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "web-build",
-        "installCommand": "npm install --legacy-peer-deps",
-        "buildCommand": "npm run vercel-build"
-      }
-    }
-  ],
   "routes": [
+    { "src": "/manifest.json", "dest": "/manifest.json" },
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ],
+  "headers": [
     {
-      "src": "^/static/(.*)",
-      "dest": "/static/$1"
-    },
-    {
-      "src": "^/favicon.ico",
-      "dest": "/favicon.ico"
-    },
-    {
-      "src": "^/manifest.json",
-      "dest": "/manifest.json"
-    },
-    {
-      "src": "^/logo(.*).png",
-      "dest": "/logo$1.png"
-    },
-    {
-      "src": "^/(.*)\\.(js|json|css|map|ico|png|jpg|jpeg|svg|webp|gif|woff|woff2|ttf|eot|otf)",
-      "dest": "/$1.$2"
-    },
-    {
-      "src": ".*",
-      "dest": "/index.html"
+      "source": "/manifest.json",
+      "headers": [
+        { "key": "Content-Type", "value": "application/manifest+json" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
     }
   ]
 } 

@@ -50,9 +50,31 @@ if (Platform.OS !== 'web') {
 }
 
 // تكوين Sentry لتتبع الأخطاء
-Sentry.init({
-  dsn: "https://c89f5f6c4e3c4e08ad05ba4bd1ecdd6f@o4506767913181184.ingest.sentry.io/4506767915147264",
-});
+try {
+  Sentry.init({
+    dsn: "https://c89f5f6c4e3c4e08ad05ba4bd1ecdd6f@o4506767913181184.ingest.sentry.io/4506767915147264",
+    enableInExpoDevelopment: false,
+    debug: false,
+  });
+} catch (error) {
+  console.error("فشل في تهيئة Sentry:", error);
+}
+
+// دالة آمنة لتسجيل الأخطاء في Sentry
+const captureException = (error: any) => {
+  try {
+    if (Sentry && typeof Sentry.Native?.captureException === 'function') {
+      Sentry.Native.captureException(error);
+    } else if (Sentry && typeof (Sentry as any).captureException === 'function') {
+      (Sentry as any).captureException(error);
+    } else {
+      console.error("Sentry غير متاح:", error);
+    }
+  } catch (e) {
+    console.error("خطأ عند محاولة تسجيل استثناء في Sentry:", e);
+    console.error("الخطأ الأصلي:", error);
+  }
+};
 
 // إضافة تكوين للمسارات بشكل مبسط
 export const unstable_settings = {
@@ -79,8 +101,8 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // تسجيل الخطأ في Sentry
-    Sentry.Native.captureException(error);
+    // تسجيل الخطأ في Sentry بطريقة آمنة
+    captureException(error);
     console.error("خطأ في التطبيق:", error, errorInfo);
     this.setState({ errorInfo });
   }
@@ -120,7 +142,7 @@ function RootLayout() {
         const { isAuthenticated, user, error } = await checkAuthStatus();
         if (error) {
           console.error('فشل في التحقق من حالة المصادقة:', error);
-          Sentry.Native.captureMessage('فشل في التحقق من حالة المصادقة');
+          captureException('فشل في التحقق من حالة المصادقة');
           return;
         }
         
@@ -128,7 +150,7 @@ function RootLayout() {
         setIsAuthenticated(isAuthenticated);
       } catch (error) {
         console.error('حدث خطأ أثناء التحقق من حالة المصادقة:', error);
-        Sentry.Native.captureException(error);
+        captureException(error);
       }
     }
 
