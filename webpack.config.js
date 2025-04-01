@@ -2,11 +2,14 @@ const createExpoWebpackConfigAsync = require('@expo/webpack-config');
 const path = require('path');
 
 module.exports = async function (env, argv) {
+  // إضافة مسار app لـ expo-router
+  process.env.EXPO_ROUTER_APP_ROOT = path.resolve(__dirname, 'app');
+
   // إعداد المتغيرات البيئية
   const config = await createExpoWebpackConfigAsync({
     ...env,
     babel: {
-      dangerouslyAddModulePathsToTranspile: []
+      dangerouslyAddModulePathsToTranspile: ['expo-router']
     }
   }, argv);
 
@@ -21,6 +24,13 @@ module.exports = async function (env, argv) {
     '../../app': path.resolve(__dirname, 'app'),
     '../app': path.resolve(__dirname, 'app'),
   };
+
+  // تعريف متغير بيئي للإطار
+  config.plugins.push(
+    new (require('webpack').DefinePlugin)({
+      'process.env.EXPO_ROUTER_APP_ROOT': JSON.stringify(path.resolve(__dirname, 'app'))
+    })
+  );
 
   // تحديد مسار الملفات الثابتة
   config.output.publicPath = '/';

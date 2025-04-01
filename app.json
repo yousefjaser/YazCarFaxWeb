@@ -65,7 +65,13 @@
       }
     },
     "plugins": [
-      "expo-router",
+      [
+        "expo-router",
+        {
+          "origin": "app",
+          "root": "app"
+        }
+      ],
       [
         "sentry-expo",
         {
