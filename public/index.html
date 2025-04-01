@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="theme-color" content="#000000" />
+  <title>YazCar - إدارة معلومات السيارات</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background-color: #f7f7f7;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    #loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      width: 100vw;
+      text-align: center;
+    }
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(0, 123, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #007bff;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <div id="loading">
+      <div class="spinner"></div>
+      <h2>جاري تحميل تطبيق YazCar...</h2>
+      <p>تطبيق إدارة معلومات السيارات</p>
+    </div>
+  </div>
+  <script>
+    // يتم استبدال هذا بالتطبيق الفعلي عند البناء
+    window.addEventListener('load', function() {
+      // محاولة توجيه المستخدم إلى الصفحة الرئيسية
+      setTimeout(function() {
+        window.location.href = '/';
+      }, 1000);
+    });
+  </script>
+</body>
+</html> 
