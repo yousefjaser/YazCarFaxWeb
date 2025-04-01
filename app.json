@@ -36,7 +36,7 @@
       "bundler": "webpack",
       "output": "static",
       "router": {
-        "mode": "browser"
+        "mode": "hash"
       }
     },
     "extra": {

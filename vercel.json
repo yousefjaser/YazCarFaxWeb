@@ -17,19 +17,23 @@
       "dest": "/static/$1"
     },
     {
-      "src": "^/favicon.(.*)",
-      "dest": "/favicon.$1"
+      "src": "^/favicon.ico",
+      "dest": "/favicon.ico"
     },
     {
-      "src": "^/manifest.(.*)",
-      "dest": "/manifest.$1"
+      "src": "^/manifest.json",
+      "dest": "/manifest.json"
+    },
+    {
+      "src": "^/logo(.*).png",
+      "dest": "/logo$1.png"
     },
     {
       "src": "^/(.*)\\.(js|json|css|map|ico|png|jpg|jpeg|svg|webp|gif|woff|woff2|ttf|eot|otf)",
       "dest": "/$1.$2"
     },
     {
-      "src": "/(.*)",
+      "src": ".*",
       "dest": "/index.html"
     }
   ]
