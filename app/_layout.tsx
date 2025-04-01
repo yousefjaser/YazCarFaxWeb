@@ -8,6 +8,7 @@ import * as Sentry from 'sentry-expo';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { Text } from 'react-native';
+import './polyfills';
 
 // استيراد reanimated بشكل مشروط بالمنصة
 // فقط على المنصات المحمولة وليس الويب
@@ -24,10 +25,9 @@ Sentry.init({
   dsn: "https://c89f5f6c4e3c4e08ad05ba4bd1ecdd6f@o4506767913181184.ingest.sentry.io/4506767915147264",
 });
 
-// إضافة تكوين للمسارات لإصلاح مشكلة GitHub Pages
+// إضافة تكوين للمسارات بشكل مبسط
 export const unstable_settings = {
   initialRouteName: "index",
-  basePath: process.env.NODE_ENV === "production" ? "/YazCarFaxWeb" : "",
 };
 
 // تعريف interface لمكون ErrorBoundary
