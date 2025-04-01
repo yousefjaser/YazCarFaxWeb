@@ -3,10 +3,9 @@
   "name": "yazcar-webapp-v101",
   "framework": "create-react-app",
   "buildCommand": "npm run vercel-build",
-  "routes": [
-    { "src": "/manifest.json", "dest": "/manifest.json" },
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/manifest.json", "destination": "/manifest.json" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {
