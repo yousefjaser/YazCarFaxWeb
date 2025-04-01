@@ -2,7 +2,7 @@
  * ملف بدائل (polyfills) للمشروع
  * يساعد في توفير بعض الدوال المطلوبة للتشغيل على الويب
  * 
- * v1.0.2 - 2024 - بناء محسن للويب مع إصلاحات إضافية
+ * v1.0.3 - 2024 - حل مباشر لمشكلة nanoid
  */
 
 // استيراد polyfill لـ URL
@@ -22,118 +22,86 @@ function createSimpleId(size = 21): string {
   return id;
 }
 
-// إصلاح مشكلة nanoid عالمياً - تحسين الإصلاح
+// إصلاح مشكلة nanoid عالمياً - نهج مباشر
 try {
-  // محاولة استيراد nanoid إذا كان موجوداً
-  let originalNanoid;
-  try {
-    originalNanoid = require('nanoid');
-  } catch(e) {
-    console.log('[polyfills] لم يتم العثور على مكتبة nanoid، سيتم استخدام البديل المحلي');
-  }
-
-  // بيئة node/global
-  if (typeof global !== 'undefined') {
-    const g = global as any;
-    
-    // تأكد من وجود nanoid في النطاق العالمي
-    if (!g.nanoid) {
-      g.nanoid = originalNanoid?.nanoid || createSimpleId;
-    }
-    
-    // دعم كائن r مع nanoid
-    if (!g.r) {
-      g.r = {};
-    }
-    if (!g.r.nanoid) {
-      g.r.nanoid = originalNanoid?.nanoid || createSimpleId;
-    }
-
-    // إصلاح useRegisterNavigator
-    if (!g.nrCq) {
-      g.nrCq = {};
-    }
-    g.nrCq.nanoid = originalNanoid?.nanoid || createSimpleId;
-
-    // إصلاح لمسار الاستيراد (0, r.nanoid)
-    if (!g.useRegisterNavigator) {
-      g.useRegisterNavigator = {
-        nanoid: originalNanoid?.nanoid || createSimpleId
-      };
-    }
-  }
+  // الحصول على النطاق الكوني (window أو global)
+  const globalScope = typeof window !== 'undefined' ? window : 
+                     typeof global !== 'undefined' ? global : 
+                     typeof self !== 'undefined' ? self : {};
   
-  // بيئة المتصفح/window
-  if (typeof window !== 'undefined') {
-    const w = window as any;
-    
-    // إضافة nanoid للويب
-    if (!w.nanoid) {
-      w.nanoid = originalNanoid?.nanoid || createSimpleId;
-    }
-    
-    // إضافة كائن r.nanoid - هذا تحديداً يصلح الخطأ من useRegisterNavigator.tsx
-    if (!w.r) {
-      w.r = {};
-    }
-    
-    if (!w.r.nanoid) {
-      w.r.nanoid = originalNanoid?.nanoid || createSimpleId;
-    }
-
-    // إصلاح لمسار الاستيراد (0, r.nanoid)
-    if (!w.useRegisterNavigator) {
-      w.useRegisterNavigator = {
-        nanoid: originalNanoid?.nanoid || createSimpleId
-      };
-    }
-
-    // إصلاح للأسماء المُصغرة المستخدمة في الكود المُضغوط
-    if (!w.nrCq) {
-      w.nrCq = {};
-    }
-    w.nrCq.nanoid = originalNanoid?.nanoid || createSimpleId;
-    
-    // إضافة لمودولات ES
-    if (!w.module) {
-      w.module = {};
-    }
-    
-    if (!w.module.exports) {
-      w.module.exports = {};
-    }
-    
-    w.module.exports.nanoid = originalNanoid?.nanoid || createSimpleId;
-    
-    // إصلاح لـ ToastAndroid
-    if (!w.ToastAndroid) {
-      w.ToastAndroid = {
-        show: function(message: string, duration: number) {
-          console.log('[Toast]', message);
-          setTimeout(() => {
-            if (typeof alert === 'function') {
-              alert(message);
-            }
-          }, 0);
-        },
-        SHORT: 0,
-        LONG: 1
-      };
-    }
-  }
-
-  // إصلاحات إضافية لـ r.nanoid في بيئة مختلفة
-  try {
-    // محاولة وصول لوحدة r المستوردة
-    const r = require('r') || {};
-    if (typeof r.nanoid !== 'function') {
-      r.nanoid = originalNanoid?.nanoid || createSimpleId;
-    }
-  } catch (error) {
-    console.log('[polyfills] لم يتم العثور على مودل r، تخطي الإصلاح');
-  }
+  const g = globalScope as any;
   
-  // إصلاح لمشكلة document.currentScript.src - يستخدم في expo-router
+  // 1. إضافة nanoid للنطاق العالمي
+  g.nanoid = createSimpleId;
+  
+  // 2. إضافة r.nanoid للنطاق العالمي
+  g.r = g.r || {};
+  g.r.nanoid = createSimpleId;
+
+  // 3. تسجيل وحدة nanoid في requireJS/CommonJS
+  g.define = g.define || function(name: string, deps: any[], callback: any) {
+    if (name === 'nanoid' || name === 'r') {
+      g[name] = { nanoid: createSimpleId };
+    }
+  };
+  
+  // 4. إضافة nanoid لمختلف الأنماط المستخدمة في المشروع
+  // المستخدم في webpack
+  g.__webpack_require__ = g.__webpack_require__ || function(moduleId: string) {
+    if (moduleId === 'nanoid' || moduleId === 'r') {
+      return { nanoid: createSimpleId };
+    }
+    return { 
+      d: function(exports: any, name: string, getter: any) {
+        if (name === 'nanoid') {
+          exports.nanoid = createSimpleId;
+        }
+      } 
+    };
+  };
+
+  // 5. محاولة إضافة كائن r الخاص في الوحدات المختلفة
+  try {
+    Object.defineProperty(g, '0', {
+      get: function() { return this; }
+    });
+    // إذا نجحت الإضافة، فإننا نستطيع تجاوز مشكلة (0, r.nanoid)
+    Object.defineProperty(g, 'r', {
+      get: function() { 
+        return { nanoid: createSimpleId };
+      }
+    });
+  } catch (e) {
+    console.log('[polyfills] لم نتمكن من تعريف خاصية 0,r - استمرار بالطرق الأخرى');
+  }
+
+  // 6. تعريف مباشر لـ module.exports.nanoid لدعم CommonJS
+  g.module = g.module || {};
+  g.module.exports = g.module.exports || {};
+  g.module.exports.nanoid = createSimpleId;
+
+  // 7. إنشاء وحدات مختلفة محتملة تستخدم في expo-router
+  const moduleNames = ['nrCq', 'useRegisterNavigator', 'expo-router', 'expo-router-dom'];
+  moduleNames.forEach(name => {
+    g[name] = g[name] || {};
+    g[name].nanoid = createSimpleId;
+  });
+
+  // 8. إصلاح لـ ToastAndroid
+  g.ToastAndroid = g.ToastAndroid || {
+    show: function(message: string, duration: number) {
+      console.log('[Toast]', message);
+      setTimeout(() => {
+        if (typeof alert === 'function') {
+          alert(message);
+        }
+      }, 0);
+    },
+    SHORT: 0,
+    LONG: 1
+  };
+  
+  // 9. إصلاح لمشكلة document.currentScript.src - يستخدم في expo-router
   if (typeof document !== 'undefined' && !document.currentScript) {
     Object.defineProperty(document, 'currentScript', {
       get: function() {
@@ -142,18 +110,22 @@ try {
     });
   }
 
-  // تسجيل تجاوز لـ (0, r.nanoid) function
-  if (typeof Object.prototype !== 'undefined') {
-    // إضافة مُعالج لمحاولات استدعاء (0, r.nanoid)
-    const originalCall = Function.prototype.call;
-    Function.prototype.call = function(thisArg: any, ...args: any[]) {
-      if (args[0] === 0 && args[1]?.r?.nanoid === undefined &&
-          (this.name === 'nanoid' || this.caller?.name === 'nanoid')) {
-        return createSimpleId();
-      }
-      return originalCall.apply(this, [thisArg, ...args]);
-    };
-  }
+  // 10. تجاوز نهائي - monkey patching للكود المُنتَج
+  // إضافة nanoid على أي كائن قد يتم استخدامه لاستدعاء الدالة
+  const originalObjectAssign = Object.assign;
+  Object.assign = function(target: any, ...sources: any[]) {
+    const result = originalObjectAssign.apply(this, [target, ...sources]);
+    
+    // إضافة nanoid لأي كائن يتم إنشاؤه عن طريق Object.assign
+    if (result && typeof result === 'object' && sources.some(s => s && (s.r || s.nanoid))) {
+      if (!result.nanoid) result.nanoid = createSimpleId;
+      if (!result.r) result.r = { nanoid: createSimpleId };
+      else if (result.r && !result.r.nanoid) result.r.nanoid = createSimpleId;
+    }
+    
+    return result;
+  };
+
 } catch (error) {
   console.error('[polyfills] فشل في تطبيق البدائل:', error);
 }
@@ -167,22 +139,32 @@ try {
   const testId = typeof nanoid === 'function' ? nanoid() : createSimpleId();
   
   // إضافة تعليق لإظهار أن الملف تم تحميله
-  console.log('[polyfills] تم تحميل البدائل لدعم التشغيل على الويب | v1.0.2');
+  console.log('[polyfills] تم تحميل البدائل لدعم التشغيل على الويب | v1.0.3');
   console.log('[polyfills] اختبار nanoid:', testId);
   
   // اختبار r.nanoid إذا كان متاحاً
-  if (typeof window !== 'undefined' && (window as any).r && typeof (window as any).r.nanoid === 'function') {
-    console.log('[polyfills] اختبار r.nanoid:', (window as any).r.nanoid());
+  const g = (typeof window !== 'undefined' ? window : 
+           typeof global !== 'undefined' ? global : 
+           typeof self !== 'undefined' ? self : {}) as any;
+           
+  if (g.r && typeof g.r.nanoid === 'function') {
+    console.log('[polyfills] اختبار r.nanoid:', g.r.nanoid());
   }
 
-  // اختبار تجاوز الدالة
+  // محاكاة (0, r.nanoid)() إذا أمكن
   try {
-    const mockFn = function() { return createSimpleId(); };
-    const mockObj = { r: { } };
-    const result = (mockFn as any).call(null, 0, mockObj);
-    console.log('[polyfills] اختبار تجاوز الدالة:', result);
+    const mockExpression = function() {
+      const zero = 0;
+      const mockR = { nanoid: createSimpleId };
+      
+      // محاولة محاكاة السياق بأمان
+      const result = mockR.nanoid();
+      console.log('[polyfills] محاكاة (0, r.nanoid):', result);
+      return result;
+    };
+    mockExpression();
   } catch (e) {
-    console.error('[polyfills] فشل اختبار تجاوز الدالة:', e);
+    console.log('[polyfills] لم نتمكن من محاكاة (0, r.nanoid)');
   }
 } catch (error) {
   console.error('[polyfills] خطأ في الاختبار:', error);
