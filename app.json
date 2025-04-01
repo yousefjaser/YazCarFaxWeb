@@ -45,13 +45,7 @@
       }
     },
     "plugins": [
-      [
-        "expo-router",
-        {
-          "origin": "/",
-          "root": "./"
-        }
-      ],
+      "expo-router",
       [
         "sentry-expo",
         {

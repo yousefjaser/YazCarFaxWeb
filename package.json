@@ -9,13 +9,11 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "build": "npx expo export:web",
-    "vercel-build": "npx expo export:web",
     "predeploy": "npm run build && npx copyfiles -f web-build/* dist && npx copyfiles -f web-build/static/**/* dist/static",
     "deploy": "gh-pages -d dist",
     "clean": "rm -rf dist web-build .expo"
   },
   "dependencies": {
-    "@expo/webpack-config": "^19.0.1",
     "@lottiefiles/dotlottie-react": "^0.6.5",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/datetimepicker": "8.2.0",
@@ -34,7 +32,7 @@
     "expo-splash-screen": "~0.29.7",
     "expo-status-bar": "~2.0.0",
     "lottie-react-native": "7.1.0",
-    "nanoid": "^5.1.5",
+    "nanoid": "^3.3.8",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-native": "0.76.7",

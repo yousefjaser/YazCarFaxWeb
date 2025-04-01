@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <meta name="theme-color" content="#000000" />
   <title>YazCar - إدارة معلومات السيارات</title>
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="shortcut icon" href="/favicon.ico" />
   <style>
     html, body {
       height: 100%;
@@ -35,6 +37,24 @@
       to { transform: rotate(360deg); }
     }
   </style>
+  <!-- تحديد شامل لـ nanoid -->
+  <script>
+    // تعريف nanoid كبديل بسيط
+    window.nanoidFallback = function(size) {
+      size = size || 10;
+      let id = '';
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      for (let i = 0; i < size; i++) {
+        id += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return id;
+    };
+
+    // تعريف nanoid كوظيفة عامة
+    if (typeof window.nanoid === 'undefined') {
+      window.nanoid = window.nanoidFallback;
+    }
+  </script>
 </head>
 <body>
   <div id="root">
@@ -44,14 +64,5 @@
       <p>تطبيق إدارة معلومات السيارات</p>
     </div>
   </div>
-  <script>
-    // يتم استبدال هذا بالتطبيق الفعلي عند البناء
-    window.addEventListener('load', function() {
-      // محاولة توجيه المستخدم إلى الصفحة الرئيسية
-      setTimeout(function() {
-        window.location.href = '/';
-      }, 1000);
-    });
-  </script>
 </body>
 </html> 

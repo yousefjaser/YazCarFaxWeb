@@ -1,31 +1,13 @@
-# YazCar
+# Expo Router Example
 
-تطبيق YazCar لإدارة معلومات السيارات والصيانة
+Use [`expo-router`](https://docs.expo.dev/router/introduction/) to build native navigation using files in the `app/` directory.
 
-## الاستضافة
+## 🚀 How to use
 
-تم استضافة النسخة الويب من هذا التطبيق على [Vercel](https://vercel.com)
-
-## طريقة تشغيل المشروع محلياً
-
-### تثبيت التبعيات
-```bash
-npm install
-# أو
-yarn install
+```sh
+npx create-expo-app -e with-router
 ```
 
-### تشغيل التطبيق
-```bash
-# لتشغيل نسخة الويب
-npm run web
-# لتشغيل نسخة الأندرويد
-npm run android
-# لتشغيل نسخة الآيفون
-npm run ios
-```
+## 📝 Notes
 
-### بناء نسخة الويب
-```bash
-npm run build
-```
+- [Expo Router: Docs](https://docs.expo.dev/router/introduction/)
