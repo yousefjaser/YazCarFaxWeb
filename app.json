@@ -48,7 +48,8 @@
       [
         "expo-router",
         {
-          "origin": "/"
+          "origin": "/",
+          "root": "./"
         }
       ],
       [

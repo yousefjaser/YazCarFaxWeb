@@ -5,11 +5,29 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "web-build"
+        "distDir": "web-build",
+        "installCommand": "npm install --no-audit",
+        "buildCommand": "npx expo export:web"
       }
     }
   ],
   "routes": [
+    {
+      "src": "^/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "^/favicon.(.*)",
+      "dest": "/favicon.$1"
+    },
+    {
+      "src": "^/manifest.(.*)",
+      "dest": "/manifest.$1"
+    },
+    {
+      "src": "^/(.*)\\.(js|json|css|map|ico|png|jpg|jpeg|svg|webp|gif|woff|woff2|ttf|eot|otf)",
+      "dest": "/$1.$2"
+    },
     {
       "src": "/(.*)",
       "dest": "/index.html"
