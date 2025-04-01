@@ -6,7 +6,7 @@
       "use": "@vercel/static-build",
       "config": {
         "distDir": "web-build",
-        "installCommand": "npm install",
+        "installCommand": "npm install --legacy-peer-deps",
         "buildCommand": "npx expo export:web"
       }
     }
