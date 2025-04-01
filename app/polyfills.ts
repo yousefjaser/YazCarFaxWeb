@@ -1,6 +1,8 @@
 /**
  * ملف بدائل (polyfills) للمشروع
  * يساعد في توفير بعض الدوال المطلوبة للتشغيل على الويب
+ * 
+ * v1.0.1 - بناء محسن للويب
  */
 
 // استيراد polyfill لـ URL
@@ -76,6 +78,9 @@ if (typeof document !== 'undefined' && !document.currentScript) {
     }
   });
 }
+
+// إضافة تعليق لإظهار أن الملف تم تحميله
+console.log('[polyfills] تم تحميل البدائل لدعم التشغيل على الويب | v1.0.1');
 
 // export للتوافق كـ module
 export default {

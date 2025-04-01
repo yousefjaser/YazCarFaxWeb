@@ -1,11 +1,11 @@
 {
   "name": "YazCar - إدارة معلومات السيارات",
   "short_name": "YazCar",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#007bff",
-  "description": "تطبيق لإدارة معلومات السيارات وتاريخ الصيانة",
+  "description": "تطبيق YazCar لإدارة معلومات السيارات وتاريخ الصيانة | النسخة 1.0.1",
   "dir": "rtl",
   "lang": "ar",
   "orientation": "portrait-primary",
