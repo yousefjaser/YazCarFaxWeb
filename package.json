@@ -1,8 +1,8 @@
 {
   "name": "yazcar",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "expo-router/entry",
-  "homepage": "https://yousefjaser.github.io/YazCarFaxWeb",
+  "homepage": "https://yazcar.xyz",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -10,7 +10,7 @@
     "web": "expo start --web",
     "ts:check": "tsc",
     "build": "npx expo export:web",
-    "vercel-build": "npx expo export:web",
+    "vercel-build": "bash -c 'echo \"Building YazCar v1.0.1\" && npx expo export:web'",
     "predeploy": "npm run build && npx copyfiles -f web-build/* dist && npx copyfiles -f web-build/static/**/* dist/static",
     "deploy": "gh-pages -d dist",
     "clean": "rm -rf dist web-build .expo"

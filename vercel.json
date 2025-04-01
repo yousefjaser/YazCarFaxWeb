@@ -1,5 +1,8 @@
 {
   "version": 2,
+  "name": "yazcar-webapp-v101",
+  "framework": "create-react-app",
+  "buildCommand": "npm run vercel-build",
   "routes": [
     { "src": "/manifest.json", "dest": "/manifest.json" },
     { "handle": "filesystem" },
@@ -12,6 +15,16 @@
         { "key": "Content-Type", "value": "application/manifest+json" },
         { "key": "Access-Control-Allow-Origin", "value": "*" }
       ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+      ]
     }
-  ]
+  ],
+  "github": {
+    "enabled": true,
+    "silent": false
+  }
 } 

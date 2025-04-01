@@ -2,7 +2,7 @@
  * ملف بدائل (polyfills) للمشروع
  * يساعد في توفير بعض الدوال المطلوبة للتشغيل على الويب
  * 
- * v1.0.1 - بناء محسن للويب
+ * v1.0.1 - 2024 - بناء محسن للويب
  */
 
 // استيراد polyfill لـ URL
@@ -22,65 +22,103 @@ function createSimpleId(size = 21): string {
   return id;
 }
 
-// إصلاح مشكلة nanoid
-if (typeof global !== 'undefined') {
-  const g = global as any;
-  
-  // تأكد من وجود nanoid في النطاق العالمي
-  if (!g.nanoid) {
-    g.nanoid = createSimpleId;
+// إصلاح مشكلة nanoid عالمياً
+try {
+  // بيئة node/global
+  if (typeof global !== 'undefined') {
+    const g = global as any;
+    
+    // تأكد من وجود nanoid في النطاق العالمي
+    if (!g.nanoid) {
+      g.nanoid = createSimpleId;
+    }
+    
+    // دعم كائن r مع nanoid
+    if (!g.r) {
+      g.r = {};
+    }
+    if (!g.r.nanoid) {
+      g.r.nanoid = createSimpleId;
+    }
   }
+  
+  // بيئة المتصفح/window
+  if (typeof window !== 'undefined') {
+    const w = window as any;
+    
+    // إضافة nanoid للويب
+    if (!w.nanoid) {
+      w.nanoid = createSimpleId;
+    }
+    
+    // إضافة كائن r.nanoid - هذا تحديداً يصلح الخطأ من useRegisterNavigator.tsx
+    if (!w.r) {
+      w.r = {};
+    }
+    
+    if (!w.r.nanoid) {
+      w.r.nanoid = createSimpleId;
+    }
+    
+    // إضافة لمودولات ES
+    if (!w.module) {
+      w.module = {};
+    }
+    
+    if (!w.module.exports) {
+      w.module.exports = {};
+    }
+    
+    w.module.exports.nanoid = createSimpleId;
+    
+    // إصلاح لـ ToastAndroid
+    if (!w.ToastAndroid) {
+      w.ToastAndroid = {
+        show: function(message: string, duration: number) {
+          console.log('[Toast]', message);
+          setTimeout(() => {
+            if (typeof alert === 'function') {
+              alert(message);
+            }
+          }, 0);
+        },
+        SHORT: 0,
+        LONG: 1
+      };
+    }
+  }
+  
+  // إصلاح لمشكلة document.currentScript.src - يستخدم في expo-router
+  if (typeof document !== 'undefined' && !document.currentScript) {
+    Object.defineProperty(document, 'currentScript', {
+      get: function() {
+        return { src: '/index.js' };
+      }
+    });
+  }
+} catch (error) {
+  console.error('فشل في تطبيق البدائل:', error);
 }
 
 // بديل لـ nanoid للتصدير
 export const nanoid = createSimpleId;
 
-// إصلاح للويب
-if (typeof window !== 'undefined') {
-  const w = window as any;
+// للفحص والتأكد من أن الكود يعمل
+try {
+  // تأكد من أن nanoid متاح ويمكن تنفيذه
+  const testId = typeof nanoid === 'function' ? nanoid() : createSimpleId();
   
-  // إضافة nanoid للويب
-  if (!w.nanoid) {
-    w.nanoid = createSimpleId;
-  }
+  // إضافة تعليق لإظهار أن الملف تم تحميله
+  console.log('[polyfills] تم تحميل البدائل لدعم التشغيل على الويب | v1.0.1');
+  console.log('[polyfills] اختبار nanoid:', testId);
   
-  // إضافة كائن r.nanoid - هذا تحديداً يصلح الخطأ من useRegisterNavigator.tsx
-  if (!w.r) {
-    w.r = {};
+  // اختبار r.nanoid إذا كان متاحاً
+  if (typeof window !== 'undefined' && (window as any).r && typeof (window as any).r.nanoid === 'function') {
+    console.log('[polyfills] اختبار r.nanoid:', (window as any).r.nanoid());
   }
-  
-  if (!w.r.nanoid) {
-    w.r.nanoid = createSimpleId;
-  }
-  
-  // إصلاح لـ ToastAndroid
-  if (!w.ToastAndroid) {
-    w.ToastAndroid = {
-      show: function(message: string, duration: number) {
-        console.log('[Toast]', message);
-        setTimeout(() => {
-          if (typeof alert === 'function') {
-            alert(message);
-          }
-        }, 0);
-      },
-      SHORT: 0,
-      LONG: 1
-    };
-  }
+} catch (error) {
+  console.error('[polyfills] خطأ في الاختبار:', error);
 }
-
-// إصلاح لمشكلة document.currentScript.src - يستخدم في expo-router
-if (typeof document !== 'undefined' && !document.currentScript) {
-  Object.defineProperty(document, 'currentScript', {
-    get: function() {
-      return { src: '/index.js' };
-    }
-  });
-}
-
-// إضافة تعليق لإظهار أن الملف تم تحميله
-console.log('[polyfills] تم تحميل البدائل لدعم التشغيل على الويب | v1.0.1');
 
 // export للتوافق كـ module
 export default {
