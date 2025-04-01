@@ -6,28 +6,79 @@
 // استيراد polyfill لـ URL
 import 'react-native-url-polyfill/auto';
 
-// خلق nanoid شامل للعمل على جميع المنصات
-if (typeof global !== 'undefined') {
-  function createSimpleId(size = 21): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    let id = '';
-    
-    for (let i = 0; i < size; i++) {
-      id += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    
-    return id;
+/**
+ * تنفيذ محلي بسيط للـ nanoid
+ */
+function createSimpleId(size = 21): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let id = '';
+  
+  for (let i = 0; i < size; i++) {
+    id += chars.charAt(Math.floor(Math.random() * chars.length));
   }
+  
+  return id;
+}
 
-  // إضافة للنطاق العالمي
+// إصلاح مشكلة nanoid
+if (typeof global !== 'undefined') {
   const g = global as any;
   
-  // تعريف بديل nanoid إذا لم يكن موجودًا
+  // تأكد من وجود nanoid في النطاق العالمي
   if (!g.nanoid) {
     g.nanoid = createSimpleId;
   }
 }
 
-// بدائل إضافية يمكن إضافتها حسب الحاجة
+// بديل لـ nanoid للتصدير
+export const nanoid = createSimpleId;
 
-export {}; 
+// إصلاح للويب
+if (typeof window !== 'undefined') {
+  const w = window as any;
+  
+  // إضافة nanoid للويب
+  if (!w.nanoid) {
+    w.nanoid = createSimpleId;
+  }
+  
+  // إضافة كائن r.nanoid - هذا تحديداً يصلح الخطأ من useRegisterNavigator.tsx
+  if (!w.r) {
+    w.r = {};
+  }
+  
+  if (!w.r.nanoid) {
+    w.r.nanoid = createSimpleId;
+  }
+  
+  // إصلاح لـ ToastAndroid
+  if (!w.ToastAndroid) {
+    w.ToastAndroid = {
+      show: function(message: string, duration: number) {
+        console.log('[Toast]', message);
+        setTimeout(() => {
+          if (typeof alert === 'function') {
+            alert(message);
+          }
+        }, 0);
+      },
+      SHORT: 0,
+      LONG: 1
+    };
+  }
+}
+
+// إصلاح لمشكلة document.currentScript.src - يستخدم في expo-router
+if (typeof document !== 'undefined' && !document.currentScript) {
+  Object.defineProperty(document, 'currentScript', {
+    get: function() {
+      return { src: '/index.js' };
+    }
+  });
+}
+
+// export للتوافق كـ module
+export default {
+  nanoid: createSimpleId,
+  createSimpleId
+}; 

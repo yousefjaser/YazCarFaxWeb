@@ -37,11 +37,10 @@
       to { transform: rotate(360deg); }
     }
   </style>
-  <!-- تحديد شامل لـ nanoid -->
   <script>
-    // تعريف nanoid كبديل بسيط
+    // ----------- إصلاح مشكلة nanoid -----------
     window.nanoidFallback = function(size) {
-      size = size || 10;
+      size = size || 21;
       let id = '';
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
       for (let i = 0; i < size; i++) {
@@ -50,10 +49,30 @@
       return id;
     };
 
-    // تعريف nanoid كوظيفة عامة
-    if (typeof window.nanoid === 'undefined') {
-      window.nanoid = window.nanoidFallback;
-    }
+    // تعريف nanoid كدالة عالمية
+    window.nanoid = window.nanoidFallback;
+
+    // تعريف كائن nanoid لدعم الاستيراد
+    window.r = { nanoid: window.nanoidFallback };
+    
+    // تعريف module.exports لدعم استيراد شامل
+    window.module = window.module || {};
+    window.module.exports = window.module.exports || {};
+    window.module.exports.nanoid = window.nanoidFallback;
+
+    // بدائل أخرى للجوال -> الويب
+    window.ToastAndroid = {
+      show: function(message, duration) {
+        console.log('[Toast]', message);
+        if (typeof window.alert === 'function') {
+          setTimeout(function() {
+            window.alert(message);
+          }, 0);
+        }
+      },
+      SHORT: 0,
+      LONG: 1
+    };
   </script>
 </head>
 <body>

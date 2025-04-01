@@ -7,8 +7,37 @@ import { checkAuthStatus } from './services/auth';
 import * as Sentry from 'sentry-expo';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
-import { Text } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
+
+// استيراد البدائل قبل كل شيء آخر
 import './polyfills';
+
+// دالة لإنشاء معرف فريد
+function createSimpleId(size = 21): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let id = '';
+  
+  for (let i = 0; i < size; i++) {
+    id += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  
+  return id;
+}
+
+// تضمين بديل يدوي لـ nanoid (تأكيداً إضافياً)
+if (typeof global !== 'undefined') {
+  (global as any).nanoid = (global as any).nanoid || createSimpleId;
+}
+
+if (typeof window !== 'undefined') {
+  (window as any).nanoid = (window as any).nanoid || createSimpleId;
+  
+  // دعم r.nanoid
+  if (!(window as any).r) {
+    (window as any).r = {};
+  }
+  (window as any).r.nanoid = (window as any).r.nanoid || createSimpleId;
+}
 
 // استيراد reanimated بشكل مشروط بالمنصة
 // فقط على المنصات المحمولة وليس الويب
@@ -37,36 +66,40 @@ interface ErrorBoundaryProps {
 
 interface ErrorBoundaryState {
   hasError: boolean;
+  error?: Error;
+  errorInfo?: React.ErrorInfo;
 }
 
 // مكون الخطأ العام
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   state: ErrorBoundaryState = { hasError: false };
 
-  static getDerivedStateFromError() {
-    return { hasError: true };
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // تسجيل الخطأ في Sentry
     Sentry.Native.captureException(error);
     console.error("خطأ في التطبيق:", error, errorInfo);
+    this.setState({ errorInfo });
   }
 
   render() {
     if (this.state.hasError) {
-      // يمكنك هنا عرض واجهة مستخدم للخطأ
+      // واجهة مستخدم محسنة للخطأ
       return (
         <PaperProvider>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen
-              name="error"
-              options={{
-                title: "حدث خطأ",
-                headerShown: true,
-              }}
-            />
-          </Stack>
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorTitle}>حدث خطأ في التطبيق</Text>
+            <Text style={styles.errorMessage}>{this.state.error?.message || 'خطأ غير معروف'}</Text>
+            {this.state.error?.stack && (
+              <Text style={styles.errorStack}>{this.state.error.stack}</Text>
+            )}
+            <Text style={styles.errorHint}>
+              حاول إعادة تحميل الصفحة أو العودة للصفحة الرئيسية
+            </Text>
+          </View>
         </PaperProvider>
       );
     }
@@ -115,5 +148,44 @@ function RootLayout() {
     </ErrorBoundary>
   );
 }
+
+// أنماط لصفحة الخطأ
+const styles = StyleSheet.create({
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#f8f9fa',
+  },
+  errorTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#dc3545',
+    textAlign: 'center',
+  },
+  errorMessage: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#343a40',
+  },
+  errorStack: {
+    fontSize: 12,
+    color: '#6c757d',
+    backgroundColor: '#e9ecef',
+    padding: 10,
+    borderRadius: 5,
+    width: '100%',
+    marginBottom: 20,
+    direction: 'ltr',
+  },
+  errorHint: {
+    fontSize: 14,
+    color: '#007bff',
+    textAlign: 'center',
+  }
+});
 
 export default RootLayout; 
