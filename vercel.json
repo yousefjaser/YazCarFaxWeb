@@ -7,7 +7,7 @@
       "config": {
         "distDir": "web-build",
         "installCommand": "npm install --legacy-peer-deps",
-        "buildCommand": "npx expo export:web"
+        "buildCommand": "npm run vercel-build"
       }
     }
   ],
