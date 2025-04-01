@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Alert, SafeAreaView, Dimensions, TextInput, ActivityIndicator, Keyboard, PanResponder, Platform } from 'react-native';
 import { CameraView, BarcodeScanningResult, useCameraPermissions } from 'expo-camera';
-import { Link, useRouter } from 'expo-router';
+import { Link, useRouter, useLocalSearchParams } from 'expo-router';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Button, Surface } from 'react-native-paper';
 import { COLORS } from '../constants';
@@ -115,6 +115,9 @@ const WebCamera = ({ onBarCodeScanned, style, onError }) => {
 };
 
 export default function ScanScreen() {
+  const params = useLocalSearchParams();
+  const isForAddCar = params?.for_add_car === 'true';
+  
   console.log("تم تحميل صفحة المسح الكاملة");
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
@@ -235,8 +238,46 @@ export default function ScanScreen() {
     setLastScannedData(scanningResult.data);
     console.log(`تم مسح الباركود: ${scanningResult.data} (${scanningResult.type})`);
     
-    // البحث عن السيارة باستخدام البيانات الممسوحة
-    handleSearch(scanningResult.data);
+    // إذا كان المسح لإضافة سيارة، سنعود إلى صفحة إضافة السيارة مع البيانات
+    if (isForAddCar) {
+      handleScanForAddCar(scanningResult.data);
+    } else {
+      // البحث عن السيارة باستخدام البيانات الممسوحة
+      handleSearch(scanningResult.data);
+    }
+  };
+  
+  // مسح QR لإضافة سيارة جديدة
+  const handleScanForAddCar = (qrData) => {
+    Alert.alert(
+      'تم مسح رمز QR',
+      `هل تريد استخدام هذا الرمز (${qrData}) كمعرف للسيارة الجديدة؟`,
+      [
+        {
+          text: 'نعم',
+          onPress: () => {
+            // العودة إلى صفحة إضافة السيارة ونقل قيمة QR
+            if (Platform.OS === 'web') {
+              router.push({
+                pathname: '/shop/add-car',
+                params: { qr_id: qrData }
+              });
+            } else {
+              // على الأجهزة المحمولة
+              navigation.navigate('add-car', { qr_id: qrData });
+            }
+          }
+        },
+        {
+          text: 'إلغاء',
+          style: 'cancel',
+          onPress: () => {
+            // الرجوع إلى وضع المسح مرة أخرى
+            setScanned(false);
+          }
+        }
+      ]
+    );
   };
   
   // البحث عن سيارة باستخدام المعرف
@@ -251,8 +292,8 @@ export default function ScanScreen() {
     try {
       setLoading(true);
       
-      // البحث في قاعدة البيانات
-      const { data: car, error } = await supabase
+      // البحث في قاعدة البيانات أولاً بالرقم التعريفي (id)
+      let { data: car, error } = await supabase
         .from('cars')
         .select(`
           *,
@@ -265,6 +306,28 @@ export default function ScanScreen() {
         .eq('id', searchId)
         .maybeSingle();
       
+      // إذا لم يتم العثور على السيارة بالرقم، نبحث بواسطة QR ID
+      if (!car && !error) {
+        const { data: carByQr, error: errorQr } = await supabase
+          .from('cars')
+          .select(`
+            *,
+            customer:customer_id (
+              id,
+              name,
+              phone
+            )
+          `)
+          .eq('qr_id', searchId)
+          .maybeSingle();
+        
+        if (errorQr) {
+          error = errorQr;
+        } else {
+          car = carByQr;
+        }
+      }
+      
       if (error) {
         Alert.alert('خطأ', 'حدث خطأ أثناء البحث عن السيارة');
         console.error(error);
@@ -273,7 +336,7 @@ export default function ScanScreen() {
       }
       
       if (!car) {
-        Alert.alert('لم يتم العثور', 'لم يتم العثور على سيارة بهذا الرقم');
+        Alert.alert('لم يتم العثور', 'لم يتم العثور على سيارة بهذا الرقم أو الرمز');
         return;
       }
       
@@ -285,6 +348,17 @@ export default function ScanScreen() {
 لوحة: ${car.plate_number || ''}
 العميل: ${car.customer?.name || 'غير معروف'}`,
         [
+          { 
+            text: "عرض التفاصيل", 
+            style: "default",
+            onPress: () => {
+              if (Platform.OS === 'web') {
+                router.push(`/shop/car-details/${car.id}`);
+              } else {
+                navigation.navigate('car-details', { id: car.id });
+              }
+            }
+          },
           { 
             text: "مسح آخر", 
             style: "default",

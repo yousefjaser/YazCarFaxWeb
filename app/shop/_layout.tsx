@@ -74,7 +74,7 @@ function ShopLayout() {
   console.log("المستخدم مصرح له، عرض واجهة المحل");
   return (
     <View style={styles.container}>
-      {Platform.OS === 'web' ? <WebLayout /> : <MobileLayout />}
+      {Platform.OS === 'web' ? <WebLayout /> : <WebLayout />}
     </View>
   );
 }

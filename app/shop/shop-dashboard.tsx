@@ -7,7 +7,7 @@ import { useAuthStore } from '../utils/store';
 import { supabase } from '../config';
 import Loading from '../components/Loading';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useRouter } from 'expo-router';
+import { useRouter, Link } from 'expo-router';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
 
 export default function ShopDashboardScreen() {
@@ -213,7 +213,20 @@ export default function ShopDashboardScreen() {
             style={styles.actionCard}
             onPress={() => {
               console.log("تم الضغط على زر سيارة جديدة - التوجيه إلى: /shop/add-car");
-              router.push('/shop/add-car');
+              try {
+                if (Platform.OS === 'web') {
+                  router.push('/shop/add-car');
+                } else {
+                  // على الأجهزة المحمولة، استخدم navigate بدلاً من push
+                  navigation.navigate('add-car');
+                }
+                console.log("تم تنفيذ التنقل بنجاح");
+              } catch (error) {
+                console.error("خطأ عند محاولة التنقل:", error);
+                alert("خطأ في التنقل: " + (error instanceof Error ? error.message : String(error)));
+                // محاولة بديلة
+                router.push('/shop/add-car');
+              }
             }}
           >
             <View style={styles.actionCardContent}>
@@ -257,6 +270,44 @@ export default function ShopDashboardScreen() {
                 <Icon name="format-list-bulleted" size={24} color="#3498DB" />
               </View>
               <Text style={styles.menuItemText}>فئات الخدمة</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuItem} onPress={() => {
+              console.log("تم الضغط على زر إضافة سيارة (طريقة ثانية)");
+              try {
+                if (Platform.OS === 'web') {
+                  router.push('/shop/add-car');
+                } else {
+                  // على الأجهزة المحمولة، استخدم navigate بدلاً من push
+                  navigation.navigate('add-car');
+                }
+                console.log("تم تنفيذ التنقل إلى add-car بنجاح");
+              } catch (error) {
+                console.error("خطأ في التنقل:", error);
+                // محاولة بديلة
+                router.push('/shop/add-car');
+              }
+            }}>
+              <View style={[styles.menuIconContainer, { backgroundColor: '#F39C12' + '15' }]}>
+                <Icon name="car-connected" size={24} color="#F39C12" />
+              </View>
+              <Text style={styles.menuItemText}>إضافة سيارة (طريقة ثانية)</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuItem} onPress={() => {
+              console.log("تم الضغط على زر الصفحة البسيطة");
+              try {
+                router.push('/shop/add-car-simple');
+                console.log("تم تنفيذ router.push للصفحة البسيطة بنجاح");
+              } catch (error) {
+                console.error("خطأ في التنقل للصفحة البسيطة:", error);
+                alert("خطأ: " + (error instanceof Error ? error.message : String(error)));
+              }
+            }}>
+              <View style={[styles.menuIconContainer, { backgroundColor: '#E74C3C' + '15' }]}>
+                <Icon name="car-estate" size={24} color="#E74C3C" />
+              </View>
+              <Text style={styles.menuItemText}>صفحة بسيطة للاختبار</Text>
             </TouchableOpacity>
           </View>
         </View>
